@@ -1,8 +1,11 @@
 import axios from 'axios'
 import { useState, useEffect } from 'react'
+import config from '../../config.json'
 
 const Home = () => {
-    const URL = 'http://localhost:5000'
+    const N = config.N
+    const suffix = config.suffix
+    const URL = config.URL
     const [userId,setUserId] = useState('')
 
     const [products,setProducts] = useState([])
@@ -68,19 +71,38 @@ const Home = () => {
     }
 
     const checkCode = () => {
+        if (discCode != '') {
+            axios({
+                method: 'get',
+                url: `${URL}/admin/check-code/${userId}/${discCode}/`
+            }).then(response => {
+                console.log({response})
+                setIsCodeValid(response.data.valid)
+                setCodeMsg(response.data.message)
+                setTimeout(() => {
+                    setCodeMsg('')
+                },2000)
+            }).catch(error => {
+                console.log({error})
+            });
+        }
+    }
+
+    const checkDiscount = () => {
         axios({
             method: 'get',
-            url: `${URL}/admin/check-code/${discCode}`
+            url: `${URL}/admin/gen-code/${userId}`
         }).then(response => {
-            console.log({response})
-            setIsCodeValid(response.data.valid)
-            if (response.data.valid) {
-                setCodeMsg('Code applied')
+            console.log({response})            
+            if (response.data.applicable) {
+                setDiscCode(response.data.code)
+                // setIsCodeValid(true)
+                setOrderMsg('You are applicable for a 10% discount. Discount code applied.')
             } else {
-                setCodeMsg('Invalid code')
+                setOrderMsg('You are not applicable for a discount')
             }
             setTimeout(() => {
-                setCodeMsg('')
+                setOrderMsg('')
             },2000)
         }).catch(error => {
             console.log({error})
@@ -115,6 +137,7 @@ const Home = () => {
         setCart([])
     }
 
+
     return <>
         <div className="container mx-auto p-20 min-h-screen grid grid-cols-3">
             <div className='col-span-2'>
@@ -144,6 +167,7 @@ const Home = () => {
             <div className=''>
                 <div className="font-semibold mb-5 px-5">
                     <h1 className="text-3xl heading">Checkout</h1>
+                    <h1 className="mt-1 text-xs font-semibold">Get 10% off on every {N+suffix} order</h1>
                 </div>
                 <div>
                     {cart.length != 0 ? cart.map((c,i) => {
@@ -172,8 +196,8 @@ const Home = () => {
                     <p className='m-5 font-light text-xs'>Your cart is empty</p>
                     }
                 </div>
-                <div className="mb-5 text-sm px-5 flex justify-between items-center">
-                    <div>
+                <div className="mb-5 text-sm px-5 flex justify-between items-center font-light">
+                    <div className=''>
                         <h1 className="">Total MRP</h1>
                         <h1 className="">Discount</h1>
                         <h1 className="mt-1 font-semibold text-xl">Total amount</h1>
@@ -185,16 +209,16 @@ const Home = () => {
                     </div>
                 </div>
                 {(total != 0) ? <div className='px-5'>
-                    <button className='mb-3 bg-gray-800 text-white font-semibold p-3 text-center w-full uppercase'>Check for discounts</button>
                     <div className='mb-1 text-xs font-light text-gray-500'>Add a discount code if you have any</div>
                     <div className='border border-gray-800 grid grid-cols-4'>
                         <input className='col-span-3 outline-none p-3 w-full uppercase' type='text' value={discCode} placeholder='SAVE50' onChange={(e) => setDiscCode(e.target.value)}/>
                         <div onClick={checkCode} className='cursor-pointer font-semibold flex items-center justify-center'>APPLY</div>
                     </div>
                     <div className='mt-1 text-xs'>{codeMsg}</div>
-                    <button onClick={placeOrder} className='mt-3 bg-gray-800 text-white font-semibold p-3 text-center w-full uppercase'>Place order</button>
+                    <button onClick={checkDiscount} className='mt-3 bg-gray-800 text-white font-semibold p-3 text-center w-full uppercase'>Check for discounts</button>
+                    <button onClick={placeOrder} className='mt-1 bg-gray-800 text-white font-semibold p-3 text-center w-full uppercase'>Place order</button>
                 </div> : ''}
-                <div className='mt-1 text-xs'>{orderMsg}</div>
+                <div className='mt-1 px-5 text-xs'>{orderMsg}</div>
             </div>
         </div>
     </>

@@ -19,3 +19,11 @@ code {
 .heading {
   font-family: "Playfair Display", serif;
 }
+
+.cell {
+  padding: 20px;
+  text-align: left;
+}
+.row {
+  border-top: 2px black solid
+}

@@ -1,4 +1,5 @@
 import Home from './modules/Home'
+import Admin from './modules/Admin'
 
 const routes = [
     {
@@ -6,10 +7,10 @@ const routes = [
       component: Home,
       exact: true,
     },
-    // {
-    //   path: '/about',
-    //   component: About,
-    // }
+    {
+      path: '/admin',
+      component: Admin,
+    }
   ];
   
   export default routes;
