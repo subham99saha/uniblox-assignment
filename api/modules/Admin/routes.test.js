@@ -7,18 +7,21 @@ app.use(express.json());
 app.use('/', routes);
 
 describe('Backend Routes and Services Tests', () => {
+    /* 
+        Ensuring empty state for all variables before running unit tests
+    */
     beforeEach(async () => {
-        const respOrders = await request(app).post('/multi/orders').send({
+        await request(app).post('/multi/orders').send({
             dataArr: []
         });
-        const respCodes = await request(app).post('/multi/discCodes').send({
+        await request(app).post('/multi/discCodes').send({
             dataArr: []
         });
     });
 
     describe('GET /gen-code/:userId', () => {
         it('should generate a discount code when the user is eligible', async () => {
-            const respOrders = await request(app).post('/multi/orders').send({
+            await request(app).post('/multi/orders').send({
                 dataArr: [
                     { userId: 'test_user', orderId: 1 },
                     { userId: 'test_user', orderId: 2 }
@@ -33,7 +36,7 @@ describe('Backend Routes and Services Tests', () => {
         });
 
         it('should not generate a discount code when the user is not eligible', async () => {
-            const respOrders = await request(app).post('/multi/orders').send({
+            await request(app).post('/multi/orders').send({
                 dataArr: [
                     { userId: 'test_user', orderId: 1 }
                 ]
@@ -48,13 +51,13 @@ describe('Backend Routes and Services Tests', () => {
 
     describe('GET /check-code/:userId/:code', () => {
         it('should validate a discount code if it exists and the user is eligible', async () => {
-            const respOrders = await request(app).post('/multi/orders').send({
+            await request(app).post('/multi/orders').send({
                 dataArr: [
                     { userId: 'test_user', orderId: 1 },
                     { userId: 'test_user', orderId: 2 },
                 ]
             });
-            const respCodes = await request(app).post('/multi/codes').send({
+            await request(app).post('/multi/codes').send({
                 dataArr: [
                     { code: 'abc123', used: false }
                 ]
@@ -76,7 +79,7 @@ describe('Backend Routes and Services Tests', () => {
         });
 
         it('should return invalid if the user is not eligible for the code', async () => {
-            const respCodes = await request(app).post('/multi/codes').send({
+            await request(app).post('/multi/codes').send({
                 dataArr: [
                     { code: 'abc123', used: false }
                 ]
@@ -92,7 +95,7 @@ describe('Backend Routes and Services Tests', () => {
 
     describe('GET /view-codes', () => {
         it('should return all discount codes', async () => {
-            const respCodes = await request(app).post('/multi/codes').send({
+            await request(app).post('/multi/codes').send({
                 dataArr: [
                     { code: 'abc123', used: false }
                 ]
@@ -116,7 +119,7 @@ describe('Backend Routes and Services Tests', () => {
         });
 
         it('should place an order with a discount code and mark it as used', async () => {
-            const respCodes = await request(app).post('/multi/codes').send({
+            await request(app).post('/multi/codes').send({
                 dataArr: [
                     { code: 'abc123', used: false }
                 ]
@@ -133,7 +136,7 @@ describe('Backend Routes and Services Tests', () => {
 
     describe('GET /', () => {
         it('should return all orders', async () => {
-            const respOrders = await request(app).post('/multi/orders').send({
+            await request(app).post('/multi/orders').send({
                 dataArr: [
                     { userId: 'test_user', orderId: 1 },
                     { userId: 'test_user', orderId: 2 },
