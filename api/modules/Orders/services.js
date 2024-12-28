@@ -7,7 +7,7 @@ let orders = []
 const N = config.N
 
 /*
-    Function to generate discount code if user is applicable for a discount
+    Function to generate discount code if user is eligible for a discount
 */
 const generateCode = (req,res) => {
     let userOrders = orders.filter(o => o.userId === req.params.userId)
@@ -19,12 +19,12 @@ const generateCode = (req,res) => {
             code: randStr, used: false
         })
         res.json({
-            applicable: true,
+            eligible: true,
             code: randStr
         })
     } else {
         res.json({
-            applicable: false
+            eligible: false
         })
     }
 }
@@ -32,7 +32,7 @@ const generateCode = (req,res) => {
 /*
     Function to check validity of discount code
     1. Code must exist, and be unused
-    2. User must be applicable for a discount
+    2. User must be eligible for a discount
 */
 const checkCode = (req,res) => {
     // console.log({orders,discCodes})
@@ -46,7 +46,7 @@ const checkCode = (req,res) => {
     } else {
         if ((userOrders.length + 1) % N != 0) {
             res.json({
-                valid: false, message: 'You are not applicable for this code.'
+                valid: false, message: 'You are not eligible for this code.'
             })
         } else {     
             res.json({

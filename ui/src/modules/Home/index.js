@@ -21,7 +21,7 @@ const Home = () => {
             method: 'get',
             url: `${URL}/products`
         }).then(response => {
-            console.log({response})
+            // console.log({response})
             setProducts(response.data)
         }).catch(error => {
             console.log({error})
@@ -74,9 +74,9 @@ const Home = () => {
         if (discCode != '') {
             axios({
                 method: 'get',
-                url: `${URL}/admin/check-code/${userId}/${discCode}/`
+                url: `${URL}/orders/check-code/${userId}/${discCode}/`
             }).then(response => {
-                console.log({response})
+                // console.log({response})
                 setIsCodeValid(response.data.valid)
                 setCodeMsg(response.data.message)
                 setTimeout(() => {
@@ -91,15 +91,14 @@ const Home = () => {
     const checkDiscount = () => {
         axios({
             method: 'get',
-            url: `${URL}/admin/gen-code/${userId}`
+            url: `${URL}/orders/gen-code/${userId}`
         }).then(response => {
-            console.log({response})            
-            if (response.data.applicable) {
+            // console.log({response})            
+            if (response.data.eligible) {
                 setDiscCode(response.data.code)
-                // setIsCodeValid(true)
-                setOrderMsg('You are applicable for a 10% discount. Discount code applied.')
+                setOrderMsg('You are eligible for a 10% discount. Discount code applied.')
             } else {
-                setOrderMsg('You are not applicable for a discount')
+                setOrderMsg('You are not eligible for a discount')
             }
             setTimeout(() => {
                 setOrderMsg('')
@@ -112,7 +111,7 @@ const Home = () => {
     const placeOrder = () => {
         axios({
             method: 'post',
-            url: `${URL}/admin/`,
+            url: `${URL}/orders/`,
             headers: { 
                 'Content-Type': 'application/json', 
             },
@@ -123,7 +122,7 @@ const Home = () => {
                 userId
             }
         }).then(response => {
-            console.log({response})
+            // console.log({response})
             setOrderMsg(response.data.message)
             setTimeout(() => {
                 setOrderMsg('')

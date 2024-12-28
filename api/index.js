@@ -4,7 +4,7 @@ const app = express()
 const config = require('./config')
 
 const productRoutes = require('./modules/Products/routes')
-const adminRoutes = require('./modules/Admin/routes') 
+const orderRoutes = require('./modules/Orders/routes') 
 
 /*
     1. middleware to enable CORS
@@ -23,7 +23,7 @@ app.get('/',(req,res) => {
 })
 
 app.use('/products', productRoutes)
-app.use('/admin', adminRoutes)
+app.use('/orders', orderRoutes)
 
 app.listen(config.PORT,() => {
     console.log(`Server started on port ${config.PORT}`)

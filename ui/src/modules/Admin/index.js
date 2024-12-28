@@ -11,9 +11,9 @@ const Admin = () => {
     useEffect(() => {
         axios({
             method: 'get',
-            url: `${URL}/admin`
+            url: `${URL}/orders`
         }).then(response => {
-            console.log({response})
+            // console.log({response})
             setOrders(response.data)
         }).catch(error => {
             console.log({error})
@@ -23,9 +23,9 @@ const Admin = () => {
     useEffect(() => {
         axios({
             method: 'get',
-            url: `${URL}/admin/view-codes`
+            url: `${URL}/orders/view-codes`
         }).then(response => {
-            console.log({response})
+            // console.log({response})
             setCodes(response.data)
         }).catch(error => {
             console.log({error})

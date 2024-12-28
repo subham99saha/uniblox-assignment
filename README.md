@@ -1,6 +1,6 @@
 # Uniblox Assignment
 
-## Run Server
+# Run Server
 
 Switch to the _api_ folder
 ```
@@ -15,7 +15,7 @@ Start server
 npm start
 ```
 
-## Run UI
+# Run UI
 Switch to the _ui_ folder
 ```
 cd ui
@@ -33,7 +33,284 @@ npm start
 
 *Admin:* http://localhost:3000/admin
 
-## Interface Instructions
+# API documentation
+
+## Overview
+This API provides endpoints for managing orders and discount codes. It includes functionality for generating discount codes, validating them, placing orders, and viewing order history.
+
+## Base URL
+All endpoints are relative to the base URL and chosen PORT of your API server. By default the base url is _http://localhost:5000_
+
+## Endpoints
+
+### Fetch Products
+Fetch all available products.
+
+```
+GET /products
+```
+
+#### Response
+```json
+[
+    {
+        "id": 1,
+        "title": "Item A",
+        "price": 30,
+        "image": "a.jpg",
+        "description": "Phasellus quis lectus et metus iaculis suscipit eu in tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames."
+    },
+    {
+        "id": 2,
+        "title": "Item B",
+        "price": 50,
+        "image": "b.jpg",
+        "description": "Aliquam erat volutpat. Praesent interdum ligula sed libero scelerisque, in varius turpis fringilla. Nunc feugiat a nibh non aliquet. Vivamus."
+    }
+]
+```
+---
+### Generate Discount Code
+Generates a discount code for eligible users based on their order history.
+
+```
+GET /orders/gen-code/:userId
+```
+
+#### Parameters
+- `userId` (path parameter): The unique identifier of the user
+
+#### Response
+```json
+{
+  "eligible": true,
+  "code": "abcdef"
+}
+```
+OR
+```json
+{
+  "eligible": false
+}
+```
+
+#### Notes
+- Generates a 6-character random code if the user's next order would be their Nth order (where N is configured in config.js)
+- Codes are generated using lowercase letters a-z
+
+---
+
+### Check Discount Code
+Validates a discount code for a specific user.
+
+```
+GET /orders/check-code/:userId/:code
+```
+
+#### Parameters
+- `userId` (path parameter): The unique identifier of the user
+- `code` (path parameter): The discount code to validate
+
+#### Response
+```json
+{
+  "valid": true,
+  "message": "Code applied successfully."
+}
+```
+OR
+```json
+{
+  "valid": false,
+  "message": "Invalid code. Code doesn't exist."
+}
+```
+OR
+```json
+{
+  "valid": false,
+  "message": "You are not eligible for this code."
+}
+```
+
+#### Notes
+- Validates both code existence and user eligibility
+- User must be eligible for a discount (Nth order) to use the code
+
+---
+
+### View All Discount Codes
+Returns a list of all discount codes in the system.
+
+```
+GET /orders/view-codes
+```
+
+#### Response
+```json
+[
+  {
+    "code": "abcdef",
+    "used": false
+  }
+]
+```
+
+---
+
+### Place Order
+Creates a new order in the system.
+
+```
+POST /orders
+```
+
+#### Request Body
+```json
+{
+  "userId": "string",
+  "discountApplied": boolean,
+  "discCode": "string", // Optional, required if discountApplied is true
+  "items": [
+    {
+        "id": 1, // 1
+        "title": "string", // Item A
+        "price": "number", // 30
+        "image": "string", // a.jpg (url)
+        "description": "string",
+        "qty": "number" // 3
+    }
+  ]
+}
+```
+
+#### Response
+```json
+{
+  "message": "Order placed successfully. Discount added."
+}
+```
+OR
+```json
+{
+  "message": "Order placed successfully."
+}
+```
+
+#### Notes
+- If a discount code is applied, it will be marked as used upon successful order placement
+
+---
+
+### View All Orders
+Returns a list of all orders in the system.
+
+```
+GET /orders
+```
+
+#### Response
+```json
+[
+  {
+    "userId": "string",
+    "discountApplied": boolean,
+    "discCode": "string"
+    "items": [
+        // List of items...
+    ]
+  },
+  // More orders...
+]
+```
+
+---
+
+### Bulk Set Orders
+Bulk updates the orders database (for testing/administrative purposes).
+
+```
+POST orders/multi/orders
+```
+
+#### Request Body
+```json
+{
+  "dataArr": [
+    // Array of order objects
+  ]
+}
+```
+
+#### Response
+```json
+{
+  "message": "Data set successfully"
+}
+```
+
+---
+
+### Bulk Set Discount Codes
+Bulk updates the discount codes database (for testing/administrative purposes).
+
+```
+POST orders/multi/codes
+```
+
+#### Request Body
+```json
+{
+  "dataArr": [
+    // Array of discount code objects
+  ]
+}
+```
+
+#### Response
+```json
+{
+  "message": "Data set successfully"
+}
+```
+
+## Data Models
+
+### Product Object
+```json
+{
+    "id": 1, // 1
+    "title": "string", // Item A
+    "price": "number", // 30
+    "image": "string", // a.jpg (url)
+    "description": "string"
+}
+```
+
+### Order Object
+```json
+{
+  "userId": "string",
+  "discountApplied": boolean,
+  "discCode": "string",
+  "items": array
+}
+```
+
+### Discount Code Object
+```json
+{
+  "code": "string",
+  "used": boolean
+}
+```
+
+## Technical Notes
+- The API uses an in-memory store for both orders and discount codes
+- The discount eligibility is based on the configuration value `N` from config.js
+- All discount codes are case-insensitive during validation
+
+# Interface Instructions
 
 Visit the home page which lists all products and also contains the cart plus checkout interface
 
