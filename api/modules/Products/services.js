@@ -1,3 +1,7 @@
+/* 
+    (In-memory store)
+    Mock products data set 
+*/
 const products = [
     {
         id: 1,
@@ -43,6 +47,9 @@ const products = [
     }
 ]
 
+/*
+    Function to fetch products
+*/
 const getProducts = (req,res) => {
     res.json(products)
 }

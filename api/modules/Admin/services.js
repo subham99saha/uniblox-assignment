@@ -1,10 +1,17 @@
-const discCodes = []
-const orders = []
-const N = 3
+const config = require('../../config')
+/* 
+    (In-memory store)
+*/
+let discCodes = []
+let orders = []
+const N = config.N
 
+/*
+    Function to generate discount code if user is applicable for a discount
+*/
 const generateCode = (req,res) => {
     let userOrders = orders.filter(o => o.userId === req.params.userId)
-    console.log({userOrders})
+    // console.log({orders})
     if ((userOrders.length + 1) % N === 0) {
         let randStr = '', chars = 'abcdefghijklmnopqrstuvwxyz';
         for (var i = 6; i > 0; --i) randStr += chars[Math.floor(Math.random() * chars.length)];
@@ -22,10 +29,15 @@ const generateCode = (req,res) => {
     }
 }
 
+/*
+    Function to check validity of discount code
+    1. Code must exist, and be unused
+    2. User must be applicable for a discount
+*/
 const checkCode = (req,res) => {
+    // console.log({orders,discCodes})
     let userOrders = orders.filter(o => o.userId === req.params.userId)
     let check = discCodes.find(d => (d.code.toLowerCase() === req.params.code.toLowerCase()) && (d.used === false))
-    // console.log({check})
     let message = 'Invalid code. Code doesn\'t exist.'
     if (check === undefined) {
         res.json({
@@ -44,30 +56,58 @@ const checkCode = (req,res) => {
     }
 }
 
+/*
+    Function to list all discount codes
+*/
 const viewCodes = (req,res) => {
     res.json(discCodes)
 }
 
+/*
+    Function to place new orders
+*/
 const placeOrder = (req,res) => {
+    console.log({payload: req.body})
     let order = {...req.body}
     orders.push(order)
+    let dscntMsg = ''
     if (order.discountApplied) {
         for (let i = 0; i < discCodes.length; i++) {
             if (discCodes[i].code.toLowerCase() === order.discCode.toLowerCase()) {
                 discCodes[i].used = true
+                dscntMsg = ' Discount added.'
                 break
             }                
         }
     }
-    console.log({discCodes})
-    console.log({orders})
     res.json({
-        message: 'Order placed successfully'
+        message: 'Order placed successfully.' + dscntMsg
     })
 }
 
+/*
+    Function to list all orders
+*/
 const viewOrders = (req,res) => {
     res.json(orders)
+}
+
+/*
+    Functions to explicitly add values to in-memory variables
+*/
+const setOrders = (req,res) => {
+    let dataArr = req.body.dataArr
+    orders = [...dataArr]
+    res.json({
+        message: 'Data set successfully'
+    })
+}
+const setDiscCode = (req,res) => {
+    let dataArr = req.body.dataArr
+    discCodes = [...dataArr]
+    res.json({
+        message: 'Data set successfully'
+    })
 }
 
 module.exports = {
@@ -76,5 +116,7 @@ module.exports = {
     viewCodes,
     placeOrder,
     viewOrders,
+    setOrders,
+    setDiscCode,
 }
 

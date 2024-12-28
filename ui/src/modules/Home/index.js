@@ -81,7 +81,7 @@ const Home = () => {
                 setCodeMsg(response.data.message)
                 setTimeout(() => {
                     setCodeMsg('')
-                },2000)
+                },5000)
             }).catch(error => {
                 console.log({error})
             });
@@ -103,7 +103,7 @@ const Home = () => {
             }
             setTimeout(() => {
                 setOrderMsg('')
-            },2000)
+            },5000)
         }).catch(error => {
             console.log({error})
         });
